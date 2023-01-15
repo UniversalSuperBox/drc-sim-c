@@ -22,7 +22,7 @@ public:
     int image(uint8_t *nals, int nals_size, uint8_t *image);
 
 private:
-    AVPacket av_packet;
+    AVPacket *av_packet;
     SwsContext *sws_context;
     AVCodecContext *context;
     AVFrame *frame;

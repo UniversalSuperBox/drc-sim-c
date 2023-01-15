@@ -9,13 +9,14 @@
 #include "Constants.h"
 #include "../util/logging/Logger.h"
 
-H264Decoder::H264Decoder() {
+H264Decoder::H264Decoder() :
+    av_packet { av_packet_alloc() }
+    {
     av_log_set_callback(log_av);
-    avcodec_register_all();
 
-    av_init_packet(&av_packet);
+    assert(av_packet != NULL);
 
-    AVCodec *codec = avcodec_find_decoder(AV_CODEC_ID_H264);
+    const AVCodec *codec = avcodec_find_decoder(AV_CODEC_ID_H264);
     assert(codec != NULL);
 
     context = avcodec_alloc_context3(codec);
@@ -23,13 +24,8 @@ H264Decoder::H264Decoder() {
 
     assert(avcodec_open2(context, codec, NULL) == 0);
 
-#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(55, 28, 1)
-    frame = avcodec_alloc_frame();
-    out_frame = avcodec_alloc_frame();
-#else
     frame = av_frame_alloc();
     out_frame = av_frame_alloc();
-#endif
     assert(frame != NULL);
     assert(out_frame != NULL);
 
@@ -38,35 +34,32 @@ H264Decoder::H264Decoder() {
                                  WII_VIDEO_WIDTH, WII_VIDEO_HEIGHT, AV_PIX_FMT_RGB24,
                                  SWS_FAST_BILINEAR, NULL, NULL, NULL);
     int bytes_req = 0;
-#if LIBAVUTIL_VERSION_INT < AV_VERSION_INT(54, 6, 0)
-    bytes_req = avpicture_get_size(AV_PIX_FMT_RGB24, WII_VIDEO_WIDTH, WII_VIDEO_HEIGHT);
-#else
     bytes_req = av_image_get_buffer_size(AV_PIX_FMT_RGB24, WII_VIDEO_WIDTH, WII_VIDEO_HEIGHT, 1);
-#endif
     out_buffer = new uint8_t[bytes_req];
-#if LIBAVUTIL_VERSION_INT < AV_VERSION_INT(54, 6, 0)
-    assert(avpicture_fill((AVPicture *) out_frame, out_buffer, AV_PIX_FMT_RGB24, WII_VIDEO_WIDTH, WII_VIDEO_HEIGHT)
-           == bytes_req);
-#else
     assert(av_image_fill_arrays(out_frame->data, out_frame->linesize, out_buffer, AV_PIX_FMT_RGB24, WII_VIDEO_WIDTH,
                          WII_VIDEO_HEIGHT, 1) == bytes_req);
-#endif
 }
 
 int H264Decoder::image(uint8_t *nals, int nals_size, uint8_t *image) {
-    av_packet.data = nals;
-    av_packet.size = nals_size;
+    av_packet->data = nals;
+    av_packet->size = nals_size;
 
-    int got_frame = 0;
-    int frame_size = avcodec_decode_video2(context, frame, &got_frame, &av_packet);
+    int sent_packet = avcodec_send_packet(context, av_packet);
+    int got_frame = avcodec_receive_frame(context, frame);
+
+    if (!sent_packet) {
+        Logger::error("h264", "Failed to send packet to context");
+        return 0;
+    }
 
     if (got_frame) {
-        assert(frame_size == av_packet.size);
         sws_scale(sws_context, (const uint8_t *const *) frame->data, frame->linesize, 0, WII_VIDEO_HEIGHT,
                   out_frame->data, out_frame->linesize);
     }
-    else
+    else {
+        Logger::error("h264", "Failed to receive packet from context");
         return 0;
+    }
     int image_size = out_frame->linesize[0] * WII_VIDEO_HEIGHT;
     memcpy(image, out_frame->data[0], (size_t) image_size);
     return image_size;
