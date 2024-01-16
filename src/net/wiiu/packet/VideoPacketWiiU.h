@@ -2,6 +2,8 @@
 // Created by rolando on 5/14/17.
 //
 
+#include <cstdint>
+
 #ifndef DRC_SIM_C_VIDEO_WII_U_H
 #define DRC_SIM_C_VIDEO_WII_U_H
 #include "../../Packet.h"

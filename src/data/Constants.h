@@ -6,6 +6,7 @@
 #define DRC_SIM_C_CONSTANTS_H
 
 
+#include <cstdint>
 #include <string>
 #include "../util/OSUtil.h"
 
