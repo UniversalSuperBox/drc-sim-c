@@ -2,12 +2,15 @@
 // Created by rolando on 5/15/17.
 //
 
+#include <memory>
 #include <stdint-gcc.h>
 #include "H264Decoder.h"
 #include <assert.h>
 #include <cstring>
 #include "Constants.h"
 #include "../util/logging/Logger.h"
+
+#include <libavutil/error.h>
 
 H264Decoder::H264Decoder() :
     av_packet { av_packet_alloc() }
@@ -45,20 +48,25 @@ int H264Decoder::image(uint8_t *nals, int nals_size, uint8_t *image) {
     av_packet->size = nals_size;
 
     int sent_packet = avcodec_send_packet(context, av_packet);
+
+    if (sent_packet) {
+        std::shared_ptr<char> err(new char[AV_ERROR_MAX_STRING_SIZE + 1], std::default_delete<char[]>());
+        av_strerror(sent_packet, err.get(), sizeof(err.get()));
+        Logger::error("h264", "Failed to send packet to context: %s", err.get());
+        return 0;
+    }
+
     int got_frame = avcodec_receive_frame(context, frame);
 
-    if (!sent_packet) {
-        Logger::error("h264", "Failed to send packet to context");
-        return 0;
-    }
-
     if (got_frame) {
-        sws_scale(sws_context, (const uint8_t *const *) frame->data, frame->linesize, 0, WII_VIDEO_HEIGHT,
-                  out_frame->data, out_frame->linesize);
+        std::shared_ptr<char> err(new char[AV_ERROR_MAX_STRING_SIZE + 1], std::default_delete<char[]>());
+        av_strerror(got_frame, err.get(), sizeof(err.get()));
+        Logger::error("h264", "Failed to receive packet from context: %s", err.get());
+        return 0;
     }
     else {
-        Logger::error("h264", "Failed to receive packet from context");
-        return 0;
+        sws_scale(sws_context, (const uint8_t *const *) frame->data, frame->linesize, 0, WII_VIDEO_HEIGHT,
+                  out_frame->data, out_frame->linesize);
     }
     int image_size = out_frame->linesize[0] * WII_VIDEO_HEIGHT;
     memcpy(image, out_frame->data[0], (size_t) image_size);
