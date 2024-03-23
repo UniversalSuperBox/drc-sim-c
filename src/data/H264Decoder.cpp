@@ -50,18 +50,20 @@ int H264Decoder::image(uint8_t *nals, int nals_size, uint8_t *image) {
     int sent_packet = avcodec_send_packet(context, av_packet);
 
     if (sent_packet) {
-        std::shared_ptr<char> err(new char[AV_ERROR_MAX_STRING_SIZE + 1], std::default_delete<char[]>());
-        av_strerror(sent_packet, err.get(), sizeof(err.get()));
-        Logger::error("h264", "Failed to send packet to context: %s", err.get());
+        char* err = new char[AV_ERROR_MAX_STRING_SIZE];
+        av_strerror(sent_packet, err, sizeof(err));
+        Logger::error("h264", "Failed to send packet to context: %s", err);
+        delete err;
         return 0;
     }
 
     int got_frame = avcodec_receive_frame(context, frame);
 
     if (got_frame) {
-        std::shared_ptr<char> err(new char[AV_ERROR_MAX_STRING_SIZE + 1], std::default_delete<char[]>());
-        av_strerror(got_frame, err.get(), sizeof(err.get()));
-        Logger::error("h264", "Failed to receive packet from context: %s", err.get());
+        char* err = new char[AV_ERROR_MAX_STRING_SIZE];
+        av_strerror(got_frame, err, sizeof(err));
+        Logger::error("h264", "Failed to receive packet from context: %s", err);
+        delete err;
         return 0;
     }
     else {
