@@ -11,22 +11,22 @@
 
 using namespace std;
 
-VideoPacketWiiU::VideoPacketWiiU(unsigned char *packet, size_t packet_size) : Packet(packet, packet_size) {
+VideoPacketWiiU::VideoPacketWiiU(unsigned char *packet, size_t packet_size) {
     // Parse
     header = (VideoPacketHeaderWiiU*)packet;
     // if (Logger::get_level() >= Logger::VERBOSE)
     //     print_debug(packet, packet_size);
 #if __BYTE_ORDER == LITTLE_ENDIAN
-    for (int byte = 0; byte < packet_size; byte++)
+    for (size_t byte = 0; byte < packet_size; byte++)
         packet[byte] = (unsigned char) BitUtil::reverse(packet[byte], 8);
     header->magic = BitUtil::reverse(header->magic, 4);
     header->packet_type = BitUtil::reverse(header->packet_type, 2);
     header->seq_id = BitUtil::reverse(header->seq_id, 10);
     header->payload_size = BitUtil::reverse(header->payload_size, 11);
     header->timestamp = BitUtil::reverse(header->timestamp, 32);
-    for (int byte = 0; byte < sizeof(header->extended_header); ++byte)
+    for (size_t byte = 0; byte < sizeof(header->extended_header); ++byte)
         header->extended_header[byte] = (unsigned char) BitUtil::reverse(header->extended_header[byte], 8);
-    for (int byte = 0; byte < header->payload_size; ++byte)
+    for (size_t byte = 0; byte < header->payload_size; ++byte)
         header->payload[byte] = (unsigned char) BitUtil::reverse(header->payload[byte], 8);
 #endif
     assert(header->payload_size <= 2048);
@@ -35,7 +35,7 @@ VideoPacketWiiU::VideoPacketWiiU(unsigned char *packet, size_t packet_size) : Pa
 void VideoPacketWiiU::print_debug(unsigned char *packet, size_t packet_size) {
     stringstream hex_string;
     hex_string << hex;
-    for (int byte = 0; byte < packet_size; byte++)
+    for (size_t byte = 0; byte < packet_size; byte++)
         hex_string << (int) packet[byte] << " ";
     hex_string << endl << dec;
     hex_string << "  magic = " << header->magic << endl;

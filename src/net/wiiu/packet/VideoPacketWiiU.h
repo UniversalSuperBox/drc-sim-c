@@ -6,7 +6,6 @@
 
 #ifndef DRC_SIM_C_VIDEO_WII_U_H
 #define DRC_SIM_C_VIDEO_WII_U_H
-#include "../../Packet.h"
 
 typedef struct {
     unsigned magic : 4;
@@ -23,7 +22,7 @@ typedef struct {
     uint8_t payload[2048];
 } VideoPacketHeaderWiiU;
 
-class VideoPacketWiiU : Packet {
+class VideoPacketWiiU {
 
 public:
     VideoPacketWiiU(unsigned char *packet, size_t packet_size);

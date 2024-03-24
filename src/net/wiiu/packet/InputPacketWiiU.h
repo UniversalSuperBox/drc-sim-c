@@ -6,7 +6,7 @@
 #define DRC_SIM_C_INPUTPACKETWIIU_H
 
 
-#include <stdint-gcc.h>
+#include <cstdint>
 
 #pragma pack(1)
 
@@ -60,7 +60,7 @@ typedef struct {
     uint8_t fw_version_neg;
 } InputPacketHeaderWiiU;
 
-#pragma pack(0)
+#pragma pack()
 
 class InputPacketWiiU {
 

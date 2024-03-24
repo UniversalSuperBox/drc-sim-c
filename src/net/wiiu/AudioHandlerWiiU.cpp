@@ -21,6 +21,8 @@ AudioHandlerWiiU::AudioHandlerWiiU() {
 
 void AudioHandlerWiiU::update(unsigned char *packet, size_t packet_size, sockaddr_in *from_address,
                           unsigned int *address_size) {
+    (void) from_address;
+    (void) address_size;
     const AudioPacketWiiU &audio_packet = AudioPacketWiiU(packet, packet_size);
     if (audio_packet.header->type != audio_packet.TYPE_AUDIO)
         return;
@@ -47,7 +49,7 @@ void AudioHandlerWiiU::send_mic_blow() {
     packet.mono = 1;
     packet.vibrate = false;
     packet.type = 0;
-    packet.seq_id = (unsigned int) seq_id_expected;
+    packet.seq_id = seq_id_expected;
     packet.payload_size = 512;
     packet.timestamp = 0;
     memcpy(packet.payload, rand_audio, 512);

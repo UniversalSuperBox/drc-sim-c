@@ -6,7 +6,7 @@
 
 bool PacketHandler::update_seq_id(unsigned int seq_id) {
     bool matched = true;
-    if (seq_id_expected == -1)
+    if (seq_id_expected == UINT_MAX)
         seq_id_expected = seq_id;
     else if (seq_id_expected != seq_id)
         matched = false;

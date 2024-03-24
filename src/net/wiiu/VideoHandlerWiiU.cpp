@@ -18,14 +18,18 @@
 
 using namespace std;
 
+#define FRAME_SIZE 100000
+
 VideoHandlerWiiU::VideoHandlerWiiU() {
-    frame = new uint8_t[100000];
+    frame = new uint8_t[FRAME_SIZE];
     frame_index = 0;
     frame_decode_num = 0;
 }
 
 void VideoHandlerWiiU::update(unsigned char *packet, size_t packet_size, sockaddr_in *from_address,
                           unsigned int *address_size) {
+    (void) from_address;
+    (void) address_size;
     const VideoPacketWiiU &video_packet = VideoPacketWiiU(packet, packet_size);
     bool is_idr = is_idr_packet(video_packet.header);
 
@@ -35,7 +39,7 @@ void VideoHandlerWiiU::update(unsigned char *packet, size_t packet_size, sockadd
         is_streaming = false;
 
     if (video_packet.header->frame_begin) {
-        memset(frame, 0, sizeof(frame));
+        memset(frame, 0, FRAME_SIZE);
         frame_index = 0;
         if (!is_streaming) {
             if (is_idr)
@@ -73,7 +77,7 @@ void VideoHandlerWiiU::update(unsigned char *packet, size_t packet_size, sockadd
 }
 
 bool VideoHandlerWiiU::is_idr_packet(VideoPacketHeaderWiiU *header) {
-    for (int byte = 0; byte < sizeof(header->extended_header); ++byte) {
+    for (size_t byte = 0; byte < sizeof(header->extended_header); ++byte) {
         if (header->extended_header[byte] == 0x80) {
             return true;
         }
@@ -111,7 +115,7 @@ int VideoHandlerWiiU::h264_nal_encapsulate(bool is_idr, uint8_t *frame, size_t f
 
     // Escape codes
     int size = params_offset + sizeof(slice) + 2;
-    for (int byte = 2; byte < frame_size; ++byte) {
+    for (size_t byte = 2; byte < frame_size; ++byte) {
         if (frame[byte] <= 3 and nals[size - 2] == 0 and nals[size - 1] == 0)
             nals[size++] = 3;
         nals[size++] = frame[byte];

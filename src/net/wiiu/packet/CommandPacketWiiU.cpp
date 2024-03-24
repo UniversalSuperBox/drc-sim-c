@@ -6,7 +6,8 @@
 #include "CommandPacketWiiU.h"
 #include "../../../util/logging/Logger.h"
 
-CommandPacketWiiU::CommandPacketWiiU(unsigned char *packet, size_t packet_size) : Packet(packet, packet_size) {
+CommandPacketWiiU::CommandPacketWiiU(unsigned char *packet, size_t packet_size) {
+    (void) packet_size;
     packet_raw = packet;
     header = (CommandPacketHeaderWiiU*)packet;
 #if __BYTE_ORDER == BIG_ENDIAN

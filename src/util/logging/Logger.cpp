@@ -21,7 +21,7 @@ const string Logger::CONFIG = "CONFIG";
 
 void Logger::info(const string log_name, const string message, ...) {
     va_list args;
-    va_start(args, 0);
+    va_start(args, message);
     log(log_name, INFO, message, args);
 }
 
@@ -43,25 +43,25 @@ void Logger::set_level(int log_level) {
 
 void Logger::debug(const string log_name, const string message, ...) {
     va_list args;
-    va_start(args, 0);
+    va_start(args, message);
     log(log_name, DEBUG, message, args);
 }
 
 void Logger::extra(const string log_name, const string message, ...) {
     va_list args;
-    va_start(args, 0);
+    va_start(args, message);
     log(log_name, EXTRA, message, args);
 }
 
 void Logger::finer(const string log_name, const string message, ...) {
     va_list args;
-    va_start(args, 0);
+    va_start(args, message);
     log(log_name, FINER, message, args);
 }
 
 void Logger::verbose(const string log_name, const string message, ...) {
     va_list args;
-    va_start(args, 0);
+    va_start(args, message);
     log(log_name, VERBOSE, message, args);
 }
 
@@ -90,7 +90,7 @@ char *Logger::get_level_str(const int level) {
 
 void Logger::error(const string log_name, const string message, ...) {
     va_list args;
-    va_start(args, 0);
+    va_start(args, message);
     log(log_name, ERROR, message, args);
     char buf[256];
     char *error_message = strerror_r(errno, buf, 256);

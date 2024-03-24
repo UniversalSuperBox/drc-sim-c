@@ -5,7 +5,8 @@
 #include <netinet/in.h>
 #include "CommandPacketServer.h"
 
-CommandPacketServer::CommandPacketServer(unsigned char *packet, size_t packet_size) : Packet(packet, packet_size) {
+CommandPacketServer::CommandPacketServer(unsigned char *packet, size_t packet_size) {
+    (void) packet_size;
     header = (CommandPacketHeaderServer*) packet;
     header->type = ntohs(header->type);
     header->payload_size = ntohs(header->payload_size);

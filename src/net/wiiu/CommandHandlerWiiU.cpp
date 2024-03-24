@@ -11,7 +11,6 @@
 #include "../../Gamepad.h"
 #include "../../data/Constants.h"
 #include "../../util/Args.h"
-#include "../../util/Resource.h"
 #include "packet/CommandPacketWiiU.h"
 
 #include <iostream>
@@ -57,6 +56,8 @@ CommandHandlerWiiU::CommandHandlerWiiU() {
 
 void CommandHandlerWiiU::update(unsigned char *packet, size_t packet_size, sockaddr_in *from_address,
                             unsigned int *address_size) {
+    (void) from_address;
+    (void) address_size;
     const CommandPacketWiiU &command_packet = CommandPacketWiiU(packet, packet_size);
     if (command_packet.header->packet_type != command_packet.PT_REQ and
             command_packet.header->packet_type != command_packet.PT_RESP)
@@ -100,14 +101,14 @@ void CommandHandlerWiiU::handle_cmd0(const CommandPacketWiiU *packet) {
     json_value *obj_cmd0 = command_responses->u.object.values[0].value;
     json_value *obj_primary_id = NULL;
     json_value *str_secondary_id = NULL;
-    for (int id = 0; id < obj_cmd0->u.object.length; ++id) {
+    for (size_t id = 0; id < obj_cmd0->u.object.length; ++id) {
         if (obj_cmd0->u.object.values[id].value->type != json_type::json_object)
             Logger::error(Logger::DRC, "Command JSON malformed: expected cmd 0 %d to be an object.", id);
         if (obj_cmd0->u.object.values[id].name == id_primary)
             obj_primary_id = obj_cmd0->u.object.values[id].value;
     }
     if (obj_primary_id != NULL) {
-        for (int id = 0; id < obj_primary_id->u.object.length; ++id) {
+        for (size_t id = 0; id < obj_primary_id->u.object.length; ++id) {
             if (obj_primary_id->u.object.values[id].value->type != json_type::json_string)
                 Logger::error(Logger::DRC, "Command JSON malformed: expected cmd 0 %s %d to be a string.",
                               id_primary.c_str(), id);
@@ -186,7 +187,7 @@ void CommandHandlerWiiU::send_command(CommandPacketHeaderWiiU *header, void *hea
 }
 
 int CommandHandlerWiiU::hex_char_to_int(char hex_char) {
-    for (int hex_pos = 0; hex_pos < sizeof(hex_array); ++hex_pos)
+    for (size_t hex_pos = 0; hex_pos < sizeof(hex_array); ++hex_pos)
         if (hex_array[hex_pos] == toupper(hex_char))
             return hex_pos;
     return 0;

@@ -11,14 +11,16 @@
 #include "net/PacketHandler.h"
 #include "net/server/packet/CommandPacketServer.h"
 
-typedef struct {
-    int type;
-    int fd;
-    uint32_t addr;
-    uint16_t port;
-    time_t ping_time;
-    int tries;
-} ClientSocket;
+struct ClientSocket {
+    int type{0};
+    int fd{0};
+    uint32_t addr{0};
+    uint16_t port{0};
+    time_t ping_time{0};
+    int tries{0};
+};
+
+typedef struct ClientSocket ClientSocket;
 
 class Server {
 

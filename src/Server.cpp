@@ -35,7 +35,7 @@ void Server::run() {
 }
 
 void Server::check_socket_time() {
-    for (int sock = 0; sock < client_sockets.size(); ++sock) {
+    for (size_t sock = 0; sock < client_sockets.size(); ++sock) {
         ClientSocket s = client_sockets[sock];
         if (s.type != COMMAND)
             continue;
@@ -130,7 +130,7 @@ void Server::remove_client_socket(ClientSocket *client_socket) {
         client_socket->tries++;
         return;
     }
-    for (int sock = 0; sock < client_sockets.size(); ++sock) {
+    for (size_t sock = 0; sock < client_sockets.size(); ++sock) {
         if ((client_sockets[sock].addr > 0 and
                 client_sockets[sock].port > 0 and
                 client_sockets[sock].addr == client_socket->addr and
@@ -154,7 +154,7 @@ void Server::remove_client_socket(ClientSocket *client_socket) {
 }
 
 void Server::update_socket_time(in_port_t port, in_addr_t addr) {
-    for (int sock = 0; sock < client_sockets.size(); ++sock) {
+    for (size_t sock = 0; sock < client_sockets.size(); ++sock) {
         if (client_sockets[sock].addr == addr and
             client_sockets[sock].port == port) {
             client_sockets[sock].ping_time = time(0);
@@ -193,7 +193,7 @@ void Server::broadcast_media(unsigned char *data, size_t size, const int type) {
     unsigned char *packet = new unsigned char[size + sizeof(PACKET_DELIMITER)];
     memcpy(packet, &PACKET_DELIMITER, sizeof(PACKET_DELIMITER));
     memcpy(packet + sizeof(PACKET_DELIMITER), data, size);
-    for (int socket = 0; socket < client_sockets.size(); ++socket) {
+    for (size_t socket = 0; socket < client_sockets.size(); ++socket) {
         ClientSocket &client_socket = client_sockets[socket];
         if (client_socket.type != type)
             continue;
@@ -214,7 +214,7 @@ void Server::broadcast_media(unsigned char *data, size_t size, const int type) {
 
 void Server::broadcast_command(unsigned char *packet, size_t packet_size) {
     vector<ClientSocket> client_sockets_temp(Server::client_sockets);
-    for (int socket = 0; socket < client_sockets.size(); ++socket) {
+    for (size_t socket = 0; socket < client_sockets.size(); ++socket) {
         ClientSocket &client_socket = client_sockets[socket];
         if (client_socket.type != COMMAND)
             continue;

@@ -7,7 +7,6 @@
 
 
 #include <cstdint>
-#include "../../Packet.h"
 
 typedef struct {
     // Little endian
@@ -72,7 +71,7 @@ typedef struct {
     uint32_t seconds;
 } CommandPacketHeaderWiiUCommandTwo;
 
-class CommandPacketWiiU : Packet {
+class CommandPacketWiiU {
 public:
     CommandPacketWiiU(unsigned char *packet, size_t packet_size);
 

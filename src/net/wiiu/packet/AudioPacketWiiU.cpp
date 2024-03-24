@@ -6,10 +6,10 @@
 #include "AudioPacketWiiU.h"
 #include "../../../util/BitUtil.h"
 
-AudioPacketWiiU::AudioPacketWiiU(unsigned char *packet, size_t packet_size) : Packet(packet, packet_size) {
+AudioPacketWiiU::AudioPacketWiiU(unsigned char *packet, size_t packet_size) {
     header = (AudioPacketHeaderWiiU *)packet;
 #if __BYTE_ORDER == LITTLE_ENDIAN
-    for (int byte = 0; byte < packet_size; byte++)
+    for (size_t byte = 0; byte < packet_size; byte++)
         packet[byte] = (unsigned char) BitUtil::reverse(packet[byte], 8);
     header->format = BitUtil::reverse(header->format, 3);
     header->seq_id = BitUtil::reverse(header->seq_id, 10);

@@ -6,7 +6,6 @@
 #define DRC_SIM_C_COMMANDPACKET_SERVER_H
 
 #include <cstdint>
-#include "../../Packet.h"
 
 typedef struct {
     uint16_t type;
@@ -36,7 +35,7 @@ typedef struct {
     uint8_t extra;
 } CommandPacketButtonExtraServer;
 
-class CommandPacketServer : Packet{
+class CommandPacketServer {
 public:
     CommandPacketServer(unsigned char *packet, size_t packet_size);
 

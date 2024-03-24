@@ -8,6 +8,7 @@
 
 #include <cstddef>
 #include <netinet/in.h>
+#include <limits.h>
 
 class PacketHandler {
 
@@ -20,7 +21,7 @@ public:
 protected:
     bool update_seq_id(unsigned int seq_id);
 
-    int seq_id_expected = -1;
+    unsigned int seq_id_expected = UINT_MAX;
 };
 
 

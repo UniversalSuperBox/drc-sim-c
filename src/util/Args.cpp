@@ -35,7 +35,7 @@ void Args::parse_args(int argc, char **argv) {
     // Region
     region = get_arg("-region", "none");
     region = strcmp(region, "none") != 0 ? region : get_arg("-r", "none");
-    for (int cchar = 0; cchar < strlen(region); ++cchar)
+    for (size_t cchar = 0; cchar < strlen(region); ++cchar)
         if (!islower(region[cchar]))
             region[cchar] = (char) tolower(region[cchar]);
     // Video

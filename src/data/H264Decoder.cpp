@@ -3,7 +3,7 @@
 //
 
 #include <memory>
-#include <stdint-gcc.h>
+#include <cstdint>
 #include "H264Decoder.h"
 #include <assert.h>
 #include <cstring>
@@ -76,5 +76,8 @@ int H264Decoder::image(uint8_t *nals, int nals_size, uint8_t *image) {
 }
 
 void H264Decoder::log_av(void *avcl, int level, const char *fmt, va_list vl) {
+    (void) avcl;
+    //TODO: We should really convert libav's log level into our own
+    (void) level;
     Logger::log("h264", Logger::VERBOSE, fmt, vl);
 }

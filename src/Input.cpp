@@ -79,7 +79,7 @@ void Input::send_hid_update() {
 
         unsigned char *touchscreen = new unsigned char[sizeof(InputPacketTouchscreenWiiU)];
         memcpy(touchscreen, &packet->touchscreen, sizeof(InputPacketTouchscreenWiiU));
-        for (int byte = 0; byte < sizeof(InputPacketTouchscreenWiiU); byte += 2) {
+        for (size_t byte = 0; byte < sizeof(InputPacketTouchscreenWiiU); byte += 2) {
             unsigned char first = (unsigned char) BitUtil::reverse(touchscreen[byte], 8);
             touchscreen[byte] = (unsigned char) BitUtil::reverse(touchscreen[byte + 1], 8);
             touchscreen[byte + 1] = first;

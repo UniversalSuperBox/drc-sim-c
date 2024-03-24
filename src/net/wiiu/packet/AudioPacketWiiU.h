@@ -7,7 +7,6 @@
 
 
 #include <cstdint>
-#include "../../Packet.h"
 
 #pragma pack(1)
 typedef struct {
@@ -20,7 +19,7 @@ typedef struct {
     unsigned timestamp : 32;
     unsigned char payload[2048];
 } AudioPacketHeaderWiiU;
-#pragma pack(0)
+#pragma pack()
 
 typedef struct {
     uint32_t timestamp;
@@ -29,7 +28,7 @@ typedef struct {
     uint32_t video_format;
 } AudioPacketVideoFormatWiiU;
 
-class AudioPacketWiiU : Packet {
+class AudioPacketWiiU {
 public:
     AudioPacketWiiU(unsigned char *packet, size_t packet_size);
 
