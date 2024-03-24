@@ -113,6 +113,7 @@ void Input::send_hid_update() {
 
     Gamepad::sendwiiu(Gamepad::socket_hid, packet, sizeof(InputPacketHeaderWiiU), PORT_WII_HID);
     seq_id = (uint16_t) ((seq_id + 1) % 65535);
+    delete touch_coords;
 }
 
 uint16_t Input::get_button_input() {

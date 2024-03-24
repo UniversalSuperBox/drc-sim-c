@@ -14,12 +14,12 @@
 
 using namespace std;
 
-int Gamepad::socket_msg;
-int Gamepad::socket_cmd;
-int Gamepad::socket_aud;
-int Gamepad::socket_vid;
-int Gamepad::socket_hid;
-bool Gamepad::running;
+int Gamepad::socket_msg = 0;
+int Gamepad::socket_cmd = 0;
+int Gamepad::socket_aud = 0;
+int Gamepad::socket_vid = 0;
+int Gamepad::socket_hid = 0;
+bool Gamepad::running = false;
 AudioHandlerWiiU Gamepad::audio_handler;
 
 void Gamepad::run() {

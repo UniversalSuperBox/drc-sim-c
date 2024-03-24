@@ -35,7 +35,7 @@ public:
 
     static bool is_level_enabled(const int level);
 
-    static const char * to_hex(unsigned char *data, size_t size);
+    // static const char * to_hex(unsigned char *data, size_t size);
 
 private:
     static int log_level;

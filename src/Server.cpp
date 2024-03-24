@@ -14,10 +14,10 @@
 
 using namespace std;
 
-int Server::socket_vid;
-int Server::socket_aud;
-int Server::socket_cmd;
-vector<ClientSocket> Server::client_sockets;
+int Server::socket_vid = 0;
+int Server::socket_aud = 0;
+int Server::socket_cmd = 0;
+vector<ClientSocket> Server::client_sockets{};
 
 Server::Server() {
 

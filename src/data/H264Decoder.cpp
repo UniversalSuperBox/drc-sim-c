@@ -53,7 +53,7 @@ int H264Decoder::image(uint8_t *nals, int nals_size, uint8_t *image) {
         char* err = new char[AV_ERROR_MAX_STRING_SIZE];
         av_strerror(sent_packet, err, sizeof(err));
         Logger::error("h264", "Failed to send packet to context: %s", err);
-        delete err;
+        delete [] err;
         return 0;
     }
 
@@ -63,7 +63,7 @@ int H264Decoder::image(uint8_t *nals, int nals_size, uint8_t *image) {
         char* err = new char[AV_ERROR_MAX_STRING_SIZE];
         av_strerror(got_frame, err, sizeof(err));
         Logger::error("h264", "Failed to receive packet from context: %s", err);
-        delete err;
+        delete [] err;
         return 0;
     }
     else {

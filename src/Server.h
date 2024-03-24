@@ -45,7 +45,7 @@ public:
     static void broadcast_command(uint16_t command_id);
 
 private:
-    bool running;
+    bool running{false};
 
     void print_init();
 

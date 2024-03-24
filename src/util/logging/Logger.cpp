@@ -102,12 +102,13 @@ bool Logger::is_level_enabled(const int level) {
     return get_level() >= level;
 }
 
-const char * Logger::to_hex(unsigned char *data, size_t size) {
-    stringstream hex_string;
-    hex_string << hex;
-    for (int byte = 0; byte < size; ++byte) {
-        hex_string << (int)data[byte] << " ";
-    }
-    assert(strlen(hex_string.str().c_str()) >= size);
-    return hex_string.str().c_str();
-}
+// TODO: This leaks every allocation it makes.
+// const char * Logger::to_hex(unsigned char *data, size_t size) {
+//     stringstream hex_string;
+//     hex_string << hex;
+//     for (int byte = 0; byte < size; ++byte) {
+//         hex_string << (int)data[byte] << " ";
+//     }
+//     assert(strlen(hex_string.str().c_str()) >= size);
+//     return hex_string.str().c_str();
+// }

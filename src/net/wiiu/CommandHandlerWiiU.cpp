@@ -14,6 +14,9 @@
 #include "../../util/Resource.h"
 #include "packet/CommandPacketWiiU.h"
 
+#include <iostream>
+#include <fstream>
+
 using namespace std;
 
 char CommandHandlerWiiU::hex_array[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
@@ -22,16 +25,23 @@ CommandHandlerWiiU::CommandHandlerWiiU() {
     // Get command responses
     char path[100];
     send_blank_response = strcmp(Args::region, "none") == 0;
-    sprintf(path, "command/%s.json", send_blank_response ? "na" : Args::region);
-    Resource command_json(path, false);
-    if (!command_json.exists()) {
+    // TODO : The path here is hardcoded. Fix that.
+    sprintf(path, "../resources/command/%s.json", send_blank_response ? "na" : Args::region);
+    ifstream myfile;
+    myfile.open(path);
+    if (!myfile.is_open()) {
         Logger::info(Logger::DRC, "Specified region not found. Using default values instead.");
         send_blank_response = true;
-        command_json = Resource("command/na.json");
+        myfile.open("../resources/command/na.json");
+        if (!myfile.is_open()) {
+            Logger::error(Logger::DRC, "Could not open any command json.");
+            exit(1);
+        }
     }
-    char *json_file = new char[1000000];
-    int json_file_size = command_json.as_bytes(json_file);
-    command_responses = json_parse(json_file, (size_t) json_file_size);
+    std::string contents((std::istreambuf_iterator<char>(myfile)),
+        std::istreambuf_iterator<char>());
+
+    command_responses = json_parse(contents.c_str(), contents.size());
     // Validate JSON
     if (command_responses->type != json_type::json_object)
         Logger::error(Logger::DRC, "Command JSON malformed: root is not an object.");
@@ -51,8 +61,9 @@ void CommandHandlerWiiU::update(unsigned char *packet, size_t packet_size, socka
     if (command_packet.header->packet_type != command_packet.PT_REQ and
             command_packet.header->packet_type != command_packet.PT_RESP)
         return;
-    if (Logger::is_level_enabled(Logger::FINER))
-        Logger::finer(Logger::DRC, "CMD (%d): %s", command_packet.header->cmd_id, Logger::to_hex(packet, packet_size));
+    // TODO: Rewrite this without leaking all of its memory
+    // if (Logger::is_level_enabled(Logger::FINER))
+    //     Logger::finer(Logger::DRC, "CMD (%d): %s", command_packet.header->cmd_id, Logger::to_hex(packet, packet_size));
     ack(&command_packet);
     switch (command_packet.header->cmd_id) {
         case 0:
@@ -125,6 +136,7 @@ void CommandHandlerWiiU::handle_cmd1(const CommandPacketWiiU *packet) {
     unsigned char *payload = new unsigned char[payload_str_size / 2];
     int payload_size = hex_str_to_bytes(payload_str, payload_str_size, payload);
     send_response(header_raw, NULL, payload, payload_size);
+    delete [] payload;
 }
 
 void CommandHandlerWiiU::handle_cmd2(const CommandPacketWiiU *packet) {

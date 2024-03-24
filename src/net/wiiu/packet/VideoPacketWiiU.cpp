@@ -14,8 +14,8 @@ using namespace std;
 VideoPacketWiiU::VideoPacketWiiU(unsigned char *packet, size_t packet_size) : Packet(packet, packet_size) {
     // Parse
     header = (VideoPacketHeaderWiiU*)packet;
-    if (Logger::get_level() >= Logger::VERBOSE)
-        print_debug(packet, packet_size);
+    // if (Logger::get_level() >= Logger::VERBOSE)
+    //     print_debug(packet, packet_size);
 #if __BYTE_ORDER == LITTLE_ENDIAN
     for (int byte = 0; byte < packet_size; byte++)
         packet[byte] = (unsigned char) BitUtil::reverse(packet[byte], 8);

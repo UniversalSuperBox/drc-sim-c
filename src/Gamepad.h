@@ -38,7 +38,7 @@ private:
 
 private:
     fd_set read_set;
-    bool received_wii_u_packet;
+    bool received_wii_u_packet{false};
     VideoHandlerWiiU video_handler;
     CommandHandlerWiiU command_handler;
     MessageHandlerWiiU message_handler;
