@@ -56,7 +56,7 @@ void VideoHandlerWiiU::update(unsigned char *packet, size_t packet_size, sockadd
     if (is_streaming and video_packet.header->frame_end) {
         size_t frame_size = frame.size();
         if (frame_size > FRAME_SIZE) {
-            Logger::error(Logger::VIDEO, "Video frame grew more than default vector size! %i", frame.size());
+            Logger::info(Logger::VIDEO, "Video frame grew more than default vector size! %i", frame.size());
         }
 
         uint8_t *nals = new uint8_t[frame_size];
