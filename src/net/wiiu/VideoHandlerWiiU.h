@@ -9,6 +9,9 @@
 #include "../PacketHandler.h"
 #include "packet/VideoPacketWiiU.h"
 #include "../../data/H264Decoder.h"
+#include <vector>
+
+#define FRAME_SIZE 10000
 
 class VideoHandlerWiiU : PacketHandler {
 
@@ -19,16 +22,15 @@ public:
 
 private:
     bool is_streaming = false;
-    uint32_t frame_index = 0;
 
     int h264_nal_encapsulate(bool is_idr, uint8_t *frame, size_t frame_size, uint8_t *nals);
 
     void update(unsigned char *packet, size_t packet_size, sockaddr_in *from_address,
                 unsigned int *address_size) override;
 
-    uint8_t *frame{nullptr};
     int frame_decode_num{0};
     H264Decoder decoder;
+    std::vector<uint8_t> frame;
 };
 
 

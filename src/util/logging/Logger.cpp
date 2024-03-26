@@ -18,6 +18,7 @@ const string Logger::SERVER = "SERVER";
 const string Logger::VIDEO = "VIDEO";
 const string Logger::AUDIO = "AUDIO";
 const string Logger::CONFIG = "CONFIG";
+const string Logger::PACKET = "PACKET";
 
 void Logger::info(const string log_name, const string message, ...) {
     va_list args;

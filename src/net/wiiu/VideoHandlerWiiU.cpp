@@ -18,12 +18,10 @@
 
 using namespace std;
 
-#define FRAME_SIZE 100000
-
-VideoHandlerWiiU::VideoHandlerWiiU() {
-    frame = new uint8_t[FRAME_SIZE];
-    frame_index = 0;
-    frame_decode_num = 0;
+VideoHandlerWiiU::VideoHandlerWiiU():
+    frame_decode_num{0}, frame{}
+{
+    frame.reserve(FRAME_SIZE);
 }
 
 void VideoHandlerWiiU::update(unsigned char *packet, size_t packet_size, sockaddr_in *from_address,
@@ -35,12 +33,13 @@ void VideoHandlerWiiU::update(unsigned char *packet, size_t packet_size, sockadd
 
     bool seq_ok = update_seq_id(video_packet.header->seq_id);
 
-    if (!seq_ok)
+    if (is_streaming && !seq_ok) {
+        Logger::debug(Logger::VIDEO, "Packets received out of order, cancelling frame.");
         is_streaming = false;
+    }
 
     if (video_packet.header->frame_begin) {
-        memset(frame, 0, FRAME_SIZE);
-        frame_index = 0;
+        frame.clear();
         if (!is_streaming) {
             if (is_idr)
                 is_streaming = true;
@@ -52,12 +51,16 @@ void VideoHandlerWiiU::update(unsigned char *packet, size_t packet_size, sockadd
         }
     }
 
-    memcpy(frame + frame_index, video_packet.header->payload, video_packet.header->payload_size);
-    frame_index += video_packet.header->payload_size;
+    frame.insert(frame.end(), &video_packet.header->payload[0], &video_packet.header->payload[video_packet.header->payload_size]);
 
     if (is_streaming and video_packet.header->frame_end) {
-        uint8_t *nals = new uint8_t[frame_index * 2];
-        int nals_size = h264_nal_encapsulate(is_idr, frame, frame_index, nals);
+        size_t frame_size = frame.size();
+        if (frame_size > FRAME_SIZE) {
+            Logger::error(Logger::VIDEO, "Video frame grew more than default vector size! %i", frame.size());
+        }
+
+        uint8_t *nals = new uint8_t[frame_size];
+        int nals_size = h264_nal_encapsulate(is_idr, frame.data(), frame_size, nals);
 
         uint8_t *image_rgb = new uint8_t[2000000]; // ~2 megabytes
         decoder.image(nals, nals_size, image_rgb);

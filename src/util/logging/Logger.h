@@ -32,6 +32,7 @@ public:
     static const std::string VIDEO;
     static const std::string AUDIO;
     static const std::string CONFIG;
+    static const std::string PACKET;
 
     static bool is_level_enabled(const int level);
 
